@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>IXP2 — Manasvi Noronha</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0e0e0e;
+      --surface: #151515;
+      --border: #2a2a2a;
+      --text: #e8e4dc;
+      --muted: #6b6560;
+      --accent: #c8b99a;
+      --accent-dim: rgba(200, 185, 154, 0.12);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Mono', monospace;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Grain overlay */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 100;
+      opacity: 0.6;
+    }
+
+    /* Header */
+    header {
+      padding: 3rem 4rem 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      opacity: 0;
+      animation: fadeUp 0.8s ease forwards;
+    }
+
+    .header-left h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 300;
+      font-size: clamp(2.2rem, 4vw, 3.2rem);
+      letter-spacing: -0.01em;
+      line-height: 1.1;
+      color: var(--text);
+    }
+
+    .header-left h1 em {
+      font-style: italic;
+      color: var(--accent);
+    }
+
+    .header-meta {
+      text-align: right;
+      font-size: 0.65rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      line-height: 1.8;
+      margin-top: 0.4rem;
+    }
+
+    /* Divider */
+    .divider {
+      margin: 2.5rem 4rem;
+      height: 1px;
+      background: var(--border);
+      opacity: 0;
+      animation: fadeIn 0.6s ease 0.3s forwards;
+    }
+
+    /* Grid */
+    .grid {
+      padding: 0 4rem;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+    }
+
+    .card {
+      background: var(--bg);
+      padding: 2.4rem 2rem;
+      text-decoration: none;
+      display: flex;
+      flex-direction: column;
+      gap: 1.4rem;
+      position: relative;
+      overflow: hidden;
+      transition: background 0.3s ease;
+      opacity: 0;
+      animation: fadeUp 0.6s ease forwards;
+    }
+
+    .card:nth-child(1) { animation-delay: 0.15s; }
+    .card:nth-child(2) { animation-delay: 0.25s; }
+    .card:nth-child(3) { animation-delay: 0.35s; }
+    .card:nth-child(4) { animation-delay: 0.45s; }
+    .card:nth-child(5) { animation-delay: 0.55s; }
+
+    .card::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: var(--accent-dim);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .card:hover { background: #111; }
+    .card:hover::after { opacity: 1; }
+
+    .card-number {
+      font-size: 0.6rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .card-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(1.8rem, 2.5vw, 2.4rem);
+      font-weight: 300;
+      line-height: 1.1;
+      color: var(--text);
+      transition: color 0.3s ease;
+    }
+
+    .card:hover .card-title { color: var(--accent); }
+
+    .card-url {
+      font-size: 0.62rem;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+      margin-top: auto;
+      transition: color 0.3s ease;
+    }
+
+    .card:hover .card-url { color: var(--accent); }
+
+    .card-arrow {
+      position: absolute;
+      bottom: 2rem;
+      right: 2rem;
+      font-size: 1.1rem;
+      color: var(--muted);
+      transition: transform 0.3s ease, color 0.3s ease;
+      z-index: 1;
+    }
+
+    .card:hover .card-arrow {
+      transform: translate(3px, -3px);
+      color: var(--accent);
+    }
+
+    /* Final project spans full width */
+    .card.final {
+      grid-column: 1 / -1;
+      flex-direction: row;
+      align-items: center;
+      padding: 2.4rem 2.8rem;
+    }
+
+    .card.final .card-title {
+      font-size: clamp(2rem, 3.5vw, 3rem);
+    }
+
+    .card.final .card-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+
+    .final-badge {
+      display: inline-block;
+      font-size: 0.58rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--bg);
+      background: var(--accent);
+      padding: 0.3em 0.7em;
+      align-self: flex-start;
+      margin-bottom: 0.6rem;
+    }
+
+    /* Footer */
+    footer {
+      padding: 2.5rem 4rem;
+      margin-top: 2rem;
+      font-size: 0.6rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      display: flex;
+      justify-content: space-between;
+      opacity: 0;
+      animation: fadeIn 0.6s ease 0.7s forwards;
+    }
+
+    /* Animations */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+
+    /* Responsive */
+    @media (max-width: 680px) {
+      header, .divider, .grid, footer { padding-left: 1.5rem; padding-right: 1.5rem; }
+      .card.final { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="header-left">
+      <h1>IXP2<br /><em>Project Archive</em></h1>
+    </div>
+    <div class="header-meta">
+      Manasvi Noronha<br />
+      Interaction Design<br />
+      ArtCenter
+    </div>
+  </header>
+
+  <div class="divider"></div>
+
+  <main class="grid">
+
+    <a class="card" href="https://project1.ixp2.manasvinoronha.me/" target="_blank" rel="noopener">
+      <span class="card-number"></span>
+      <h2 class="card-title">All About Selina<br /></h2>
+      <span class="card-url">project1.ixp2.manasvinoronha.me</span>
+      <span class="card-arrow">↗</span>
+    </a>
+
+    <a class="card" href="https://project2.ixp2.manasvinoronha.me/" target="_blank" rel="noopener">
+      <span class="card-number"></span>
+      <h2 class="card-title">Washoe<br /></h2>
+      <span class="card-url">project2.ixp2.manasvinoronha.me</span>
+      <span class="card-arrow">↗</span>
+    </a>
+
+    <a class="card" href="https://project3.ixp2.manasvinoronha.me/" target="_blank" rel="noopener">
+      <span class="card-number"></span>
+      <h2 class="card-title">5 Sentences,<br />5 Buttons</h2>
+      <span class="card-url">project3.ixp2.manasvinoronha.me</span>
+      <span class="card-arrow">↗</span>
+    </a>
+
+    <a class="card" href="https://project4.ixp2.manasvinoronha.me/" target="_blank" rel="noopener">
+      <span class="card-number"></span>
+      <h2 class="card-title">Between The Lines<br /></h2>
+      <span class="card-url">project4.ixp2.manasvinoronha.me</span>
+      <span class="card-arrow">↗</span>
+    </a>
+
+    <a class="card final" href="http://final-project.ixp2.manasvinoronha.me/" target="_blank" rel="noopener">
+      <div class="card-content">
+        <span class="card-number"></span>
+        <span class="final-badge">Final Project</span>
+        <h2 class="card-title">Between Frames<br /></h2>
+        <span class="card-url">final-project.ixp2.manasvinoronha.me</span>
+      </div>
+      <span class="card-arrow">↗</span>
+    </a>
+
+  </main>
+
+ 
+
+</body>
+</html>
